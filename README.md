@@ -22,20 +22,24 @@ The project aims to make roads safer through real-time monitoring, predictive an
 - Detects signs of drowsiness and distraction.
 - Identifies potential mobile phone usage while driving.
 - Generates alerts when unsafe driving behavior is detected.
+  
 -> 2. Smart Collision Avoidance
 - Monitors surrounding vehicles and potential obstacles.
 - Estimates collision risks using distance and relative speed.
 - Supports driver warnings and automatic emergency braking.
+
 -> 3. Intelligent Traffic Management
 - Analyzes traffic density and congestion.
 - Supports adaptive traffic signal control.
 - Prioritizes emergency vehicles where supported.
 - Helps improve traffic efficiency at intersections.
+
 -> 4. Weather and Road Hazard Detection
 - Identifies potential hazards caused by fog and heavy rain.
 - Supports pothole and road-defect detection.
 - Provides warnings for low visibility and slippery surfaces.
 - Shares hazard information with approaching vehicles.
+
 ->5. Emergency Response System
 - Supports automatic incident notifications.
 - Uses GPS location and available crash telemetry.

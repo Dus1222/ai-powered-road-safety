@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoadVision AI · 2026 AI-Powered Accident Prevention Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- MediaPipe Face Mesh & Camera Utils for Live Webcam AI Tracking -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Styling -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#070B14] text-slate-100 min-h-screen flex flex-col bg-grid-pattern selection:bg-[#FF5A5F] selection:text-white">
+
+  <!-- ================= TOP COMMAND BAR & HEADER ================= -->
+  <header class="border-b border-slate-800 bg-[#0B1120]/90 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Project Title (Slide 1) -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF5A5F] to-[#FF8E92] flex items-center justify-center shadow-lg shadow-[#FF5A5F]/20">
+          <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold tracking-wider text-base sm:text-lg text-white">ROADVISION<span class="text-[#FF5A5F]">.AI</span></span>
+            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">RESEARCH BRIEF · 2026</span>
+          </div>
+          <p class="text-xs text-slate-400">AI-Powered Accident Prevention & Road Safety System</p>
+        </div>
+      </div>
+
+      <!-- Quick Global Telemetry Stats (Slide 1) -->
+      <div class="hidden lg:flex items-center gap-4 text-xs font-mono">
+        <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#FF5A5F] animate-pulse"></span>
+          <span class="text-slate-400">Global Road Deaths:</span>
+          <span class="text-slate-100 font-bold">1.19M / yr</span>
+        </div>
+        <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
+          <span class="text-slate-400">Human Error Factor:</span>
+          <span class="text-amber-400 font-bold">94%</span>
+        </div>
+        <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
+          <span class="text-slate-400">ADAS Reduction:</span>
+          <span class="text-emerald-400 font-bold">30%</span>
+        </div>
+        <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-2">
+          <i data-lucide="radio" class="w-3.5 h-3.5 text-cyan-400 animate-spin"></i>
+          <span class="text-slate-400">Active V2X Nodes:</span>
+          <span id="global-fleet-nodes" class="text-cyan-400 font-bold">14,892</span>
+        </div>
+      </div>
+
+      <!-- Header Actions: Audio toggle & Emergency SOS -->
+      <div class="flex items-center gap-3">
+        <button id="btn-toggle-sound" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2 text-xs">
+          <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden sm:inline">Audio Alerts Active</span>
+        </button>
+        <button id="btn-header-sos" class="px-3.5 py-1.5 rounded-lg bg-[#FF5A5F] hover:bg-[#E0353A] text-white font-bold transition flex items-center gap-1.5 text-xs shadow-lg shadow-[#FF5A5F]/30 animate-pulse">
+          <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+          <span>SIMULATE SOS</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tab Bar -->
+    <div class="max-w-7xl mx-auto mt-3 pt-2 border-t border-slate-800/80 overflow-x-auto">
+      <nav class="flex space-x-1 min-w-max text-xs sm:text-sm font-medium">
+        <button data-tab="panel-research" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 bg-slate-800 text-white border-b-2 border-[#FF5A5F]">
+          <i data-lucide="book-open" class="w-4 h-4 text-[#FF5A5F]"></i>
+          <span>Executive Brief & Research</span>
+        </button>
+        <button data-tab="panel-dms" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="eye" class="w-4 h-4 text-cyan-400"></i>
+          <span>Driver Monitoring (DMS)</span>
+        </button>
+        <button data-tab="panel-collision" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="shield" class="w-4 h-4 text-[#FF5A5F]"></i>
+          <span>Collision Avoidance & Radar</span>
+        </button>
+        <button data-tab="panel-traffic" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="traffic-cone" class="w-4 h-4 text-emerald-400"></i>
+          <span>Smart Signals & Traffic</span>
+        </button>
+        <button data-tab="panel-hazards" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="cloud-lightning" class="w-4 h-4 text-amber-400"></i>
+          <span>Hazard & Weather V2X</span>
+        </button>
+        <button data-tab="panel-telemetry" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="siren" class="w-4 h-4 text-red-400"></i>
+          <span>Crash Auto-Dispatch</span>
+        </button>
+        <button data-tab="panel-architecture" class="nav-tab-btn px-4 py-2 rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i>
+          <span>4-Layer Architecture</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT PANELS ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 1: EXECUTIVE BRIEF & RESEARCH HUB               -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-research" class="tab-content-panel space-y-8 animate-fadeIn">
+      
+      <!-- Hero Banner (Slides 1 & 15) -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] border border-slate-700/60 p-6 sm:p-8">
+        <div class="relative z-10 max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5A5F]/10 border border-[#FF5A5F]/30 text-[#FF5A5F] text-xs font-semibold mb-4">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+            <span>ROAD SAFETY AI INITIATIVE · BRIEFING 2026</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
+            AI-Powered Accident Prevention for Road Safety
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+            Predictive analytics, real-time monitoring, and intelligent automation working together to save lives on the road. Turning passive infrastructure into a system that watches, predicts, and acts in milliseconds.
+          </p>
+          <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 border-t border-slate-800 pt-4">
+            <span class="italic text-slate-300">"AI doesn't replace the driver — it gives the road a sense of awareness."</span>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-200">Predict</span>
+              <span>→</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-200">Perceive</span>
+              <span>→</span>
+              <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-200">Act</span>
+              <span>→</span>
+              <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">Prevent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Core Numbers (Slide 1 & 9) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-6 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-[#FF5A5F]/40 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Global Fatality Burden</span>
+            <i data-lucide="heart-pulse" class="w-5 h-5 text-[#FF5A5F]"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-[#FF5A5F] group-hover:scale-105 transition-transform origin-left">1.19M</div>
+          <p class="text-xs text-slate-400 mt-2">Annual road deaths worldwide. Leading cause of injury across commuters.</p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Human Factor In Crashes</span>
+            <i data-lucide="user-x" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-amber-400 group-hover:scale-105 transition-transform origin-left">94%</div>
+          <p class="text-xs text-slate-400 mt-2">Of crashes involve driver distraction, drowsiness, overspeeding, or impaired judgment.</p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">ADAS Mitigation Potential</span>
+            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-emerald-400 group-hover:scale-105 transition-transform origin-left">30% - 38%</div>
+          <p class="text-xs text-slate-400 mt-2">Proven potential reduction in fatal accidents through active driver assistance and AEB.</p>
+        </div>
+      </div>
+
+      <!-- Objectives (Slide 2) -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">02</span>
+            <span>Objectives: What an AI Road-Safety System Aims to Do</span>
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-red-500/10 text-[#FF5A5F] flex items-center justify-center shrink-0">
+              <i data-lucide="shield" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Reduce Fatalities</h3>
+              <p class="text-xs text-slate-400 mt-1">Prevent collisions before they occur through proactive intervention and pre-collision braking.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Detect Risky Behavior</h3>
+              <p class="text-xs text-slate-400 mt-1">Spot driver fatigue, eye-closure, phone usage, and aggressive overspeeding in real time.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+              <i data-lucide="traffic-cone" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Manage Traffic</h3>
+              <p class="text-xs text-slate-400 mt-1">Adaptive smart signals reduce intersection congestion and eliminate vehicle conflict points.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+              <i data-lucide="bot" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Assist Drivers</h3>
+              <p class="text-xs text-slate-400 mt-1">Intelligent audio-haptic alerts, automated braking (AEB), and lane-keeping assistance.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="radio" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Speed Emergency Response</h3>
+              <p class="text-xs text-slate-400 mt-1">Automated dispatch with precise crash telemetry, G-force impact vectors, and GPS coords.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex gap-3">
+            <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-200">Power Smart Cities</h3>
+              <p class="text-xs text-slate-400 mt-1">Connect vehicles (V2V), roadside infrastructure (V2I), and citizens into an integrated fabric.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technology Stack: Four Pillars (Slide 3) -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">03</span>
+            <span>Technology Stack: Four Pillars of an Intelligent Road</span>
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-[#FF5A5F] text-xs font-mono mb-2">01 · VISION</div>
+            <h3 class="text-sm font-bold text-white mb-2">Computer Vision</h3>
+            <p class="text-xs text-slate-400">Lane departure detection, pedestrian recognition, dynamic traffic sign reading, and cabin drowsiness tracking.</p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-emerald-400 text-xs font-mono mb-2">02 · PREDICTION</div>
+            <h3 class="text-sm font-bold text-white mb-2">Machine Learning</h3>
+            <p class="text-xs text-slate-400">Accident risk prediction, time-series traffic flow optimization, dynamic signal scheduling, and driver risk scoring.</p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-amber-400 text-xs font-mono mb-2">03 · CONNECTIVITY</div>
+            <h3 class="text-sm font-bold text-white mb-2">Internet of Things</h3>
+            <p class="text-xs text-slate-400">Smart connected signals, V2V/V2I low-latency communication, road surface friction sensing, and crowd-sourced defect mesh.</p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-cyan-400 text-xs font-mono mb-2">04 · COGNITION</div>
+            <h3 class="text-sm font-bold text-white mb-2">Deep Learning</h3>
+            <p class="text-xs text-slate-400">Multi-scale object recognition, transformer-based road hazard detection, and autonomous braking decision-making.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deliverables & Outcomes Benchmark (Slide 14) -->
+      <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">14</span>
+              <h2 class="text-lg font-bold text-white">Our Prototype Outcome & Deliverables</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Empirical benchmarks proving that a unified AI stack measurably reduces accident risk.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+              ✓ Tested in Simulated & Edge Hardware Environments
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-center">
+            <div class="text-2xl font-extrabold text-[#FF5A5F]">94.6%</div>
+            <div class="text-xs text-slate-300 font-medium mt-1">Drowsiness Accuracy</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Real-time eye & yawn CV</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-center">
+            <div class="text-2xl font-extrabold text-emerald-400">≤ 120 ms</div>
+            <div class="text-xs text-slate-300 font-medium mt-1">Alert Latency</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">End-to-end edge inference</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-center">
+            <div class="text-2xl font-extrabold text-amber-400">-41%</div>
+            <div class="text-xs text-slate-300 font-medium mt-1">Near-Miss Events</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Simulated urban corridors</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-center">
+            <div class="text-2xl font-extrabold text-cyan-400">+58%</div>
+            <div class="text-xs text-slate-300 font-medium mt-1">Faster EMS Dispatch</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Automated telemetry SOS</div>
+          </div>
+        </div>
+
+        <!-- Outcome Chart -->
+        <div class="h-64 w-full bg-slate-950/60 rounded-xl p-3 border border-slate-800">
+          <canvas id="chart-outcome-comparison"></canvas>
+        </div>
+      </div>
+
+      <!-- Literature Survey (Slides 12 & 13) -->
+      <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">12 - 13</span>
+              <h2 class="text-lg font-bold text-white">Literature Review & Survey (State of the Art)</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Comparative review of key publications across driver monitoring, forecasting, and V2X.</p>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="flex items-center gap-3">
+            <input id="search-literature" type="text" placeholder="Search author, technique, focus..." 
+                   class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-cyan-400 w-48 sm:w-64">
+            <select id="filter-gap-category" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none">
+              <option value="ALL">All Gap Categories</option>
+              <option value="Environmental Robustness">Environmental Robustness</option>
+              <option value="Data Scarcity">Data Scarcity</option>
+              <option value="Safety Validation">Safety Validation</option>
+              <option value="Connectivity Dependence">Connectivity</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Literature Table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-800/70 text-[11px] font-mono text-slate-400 uppercase">
+              <tr>
+                <th class="py-2.5 px-4">Author (Year)</th>
+                <th class="py-2.5 px-4">Focus Area</th>
+                <th class="py-2.5 px-4">Technique</th>
+                <th class="py-2.5 px-4">Key Contribution</th>
+                <th class="py-2.5 px-4">Identified Gap</th>
+              </tr>
+            </thead>
+            <tbody id="literature-table-body" class="divide-y divide-slate-800/60 bg-slate-900/40">
+              <!-- Dynamically populated by research.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Persistent Research Gaps:</strong> Findings cluster around three persistent bottlenecks across literature: 
+            (1) <em>Data scarcity</em> for rare catastrophic events, (2) <em>Environmental robustness</em> in severe weather, and (3) <em>Safety validation</em> at scale. Our 2026 unified platform addresses these with multi-modal sensor fusion and edge inference.
+          </div>
+        </div>
+      </div>
+
+      <!-- Future Scope (Slide 11) & Challenges (Slide 10) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Future Scope Timeline (Slide 11) -->
+        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">11</span>
+            <h2 class="text-lg font-bold text-white">Future Scope: Where the Road is Heading</h2>
+          </div>
+          
+          <div class="relative border-l-2 border-slate-800 ml-3 space-y-6">
+            <div class="relative pl-6">
+              <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-[#FF5A5F] ring-4 ring-slate-900"></span>
+              <span class="text-xs font-mono font-bold text-[#FF5A5F]">2027</span>
+              <h3 class="text-sm font-bold text-white">Predictive Prevention</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Big-data risk modeling and micro-accident forecasting deployed at citywide municipal scale.</p>
+            </div>
+
+            <div class="relative pl-6">
+              <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-cyan-400 ring-4 ring-slate-900"></span>
+              <span class="text-xs font-mono font-bold text-cyan-400">2029</span>
+              <h3 class="text-sm font-bold text-white">V2X Everywhere</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Vehicle-to-Everything established as mandatory default manufacturing protocol across all automakers.</p>
+            </div>
+
+            <div class="relative pl-6">
+              <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-400 ring-4 ring-slate-900"></span>
+              <span class="text-xs font-mono font-bold text-emerald-400">2031</span>
+              <h3 class="text-sm font-bold text-white">Smart Highways</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Self-managing national highway corridors with embedded thermal, strain, and wireless inductive sensing.</p>
+            </div>
+
+            <div class="relative pl-6">
+              <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-purple-400 ring-4 ring-slate-900"></span>
+              <span class="text-xs font-mono font-bold text-purple-400">2033</span>
+              <h3 class="text-sm font-bold text-white">Drone Monitoring</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Autonomous aerial AI drone patrols for mountain pass monitoring, rapid incident triage, and route clearance.</p>
+            </div>
+
+            <div class="relative pl-6">
+              <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-amber-400 ring-4 ring-slate-900"></span>
+              <span class="text-xs font-mono font-bold text-amber-400">2035</span>
+              <h3 class="text-sm font-bold text-white">Full Autonomy</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Commercial driverless fleets seamlessly navigating mixed-traffic and pedestrian urban environments.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Honest Challenges & Mitigations (Slide 10) -->
+        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">10</span>
+            <h2 class="text-lg font-bold text-white">Challenges & Engineering Solutions</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-red-400">01 · High Implementation Cost</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">SOLVED</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">Sensors, edge compute, and connected infrastructure require capital.</p>
+              <div class="text-[11px] text-slate-400 mt-1 border-t border-slate-800 pt-1">
+                <strong>Solution:</strong> Leverage existing smartphone camera networks + crowd-sourced accelerometer telemetry to lower barrier.
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-red-400">02 · Data Privacy Concerns</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">SOLVED</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">Continuous monitoring of drivers and pedestrians demands strict governance.</p>
+              <div class="text-[11px] text-slate-400 mt-1 border-t border-slate-800 pt-1">
+                <strong>Solution:</strong> On-device edge processing only — no raw video leaves the vehicle; only anonymous facial vectors computed locally.
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-red-400">03 · Connectivity Dependence</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">SOLVED</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">Real-time decisions need reliable, low-latency networks across all conditions.</p>
+              <div class="text-[11px] text-slate-400 mt-1 border-t border-slate-800 pt-1">
+                <strong>Solution:</strong> Local fail-safe autonomy: AEB and DMS operate 100% offline without requiring internet or cellular connectivity.
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-red-400">04 · Accuracy & Reliability</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">SOLVED</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">Models must perform safely across rain, fog, nighttime glare, and unusual postures.</p>
+              <div class="text-[11px] text-slate-400 mt-1 border-t border-slate-800 pt-1">
+                <strong>Solution:</strong> Multi-modal sensor fusion combines camera, radar, and LiDAR with transformer confidence thresholds.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 2: DRIVER MONITORING SYSTEM (DMS)               -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-dms" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header & Status -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">04</span>
+            <h2 class="text-xl font-bold text-white">Driver Monitoring System (DMS)</h2>
+            <span id="dms-status-badge" class="px-2.5 py-1 text-xs font-semibold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500">🟢 ATTENTIVE & VIGILANT</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
+            <p class="text-xs text-slate-400">Real-time Computer Vision tracking eye-closure, blink frequency, head pose, yawning, and phone distractions.</p>
+            <span id="dms-cv-engine-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60">AI MESH ACTIVE</span>
+            <span id="dms-fps-counter" class="text-[10px] font-mono text-slate-400">60 FPS</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Camera Selector -->
+          <select id="dms-camera-select" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 max-w-[140px] sm:max-w-none">
+            <option value="">Default Camera</option>
+          </select>
+
+          <!-- Toggle Live Camera Button -->
+          <button id="btn-toggle-webcam" class="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs transition flex items-center gap-2 shadow-lg shadow-cyan-600/20">
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <span id="btn-webcam-label">Start Live Camera Capture</span>
+          </button>
+
+          <!-- Capture Snapshot Button -->
+          <button id="btn-capture-snapshot" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-xs transition flex items-center gap-1.5" title="Capture high-resolution snapshot with AI telemetry overlay">
+            <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i>
+            <span>Snap Photo</span>
+          </button>
+
+          <!-- Record 5s Clip Button -->
+          <button id="btn-record-clip" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-xs transition flex items-center gap-1.5" title="Record 5-second incident video clip">
+            <i data-lucide="disc" class="w-4 h-4 text-red-400"></i>
+            <span id="btn-record-label">Record Clip</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Alert Banner (Slide 4 exact alert) -->
+      <div id="dms-live-alert-card" class="hidden p-4 rounded-xl bg-red-500/15 border-2 border-red-500 text-red-200 animate-pulse">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-3">
+            <i data-lucide="alert-triangle" class="w-6 h-6 text-red-400 shrink-0 mt-0.5"></i>
+            <div>
+              <div class="text-sm font-bold text-white tracking-wide uppercase">LIVE ALERT: Drowsiness Detected</div>
+              <p class="text-xs text-red-300 mt-1">Eye-closure duration exceeded threshold for 3 consecutive seconds. Audio + haptic alert dispatched. Cabin lighting raised.</p>
+            </div>
+          </div>
+          <span class="px-2 py-1 rounded bg-red-600 text-white font-mono font-bold text-[10px]">CRITICAL HAZARD</span>
+        </div>
+      </div>
+
+      <!-- Simulator Controls & Live Gauges Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Interactive Video / Cabin Canvas Feed (2 Cols) -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 aspect-[4/3] flex items-center justify-center shadow-2xl">
+            <!-- Offscreen Video element for webcam capture (decoded continuously) -->
+            <video id="dms-webcam" style="position: absolute; width: 1px; height: 1px; opacity: 0.001; pointer-events: none; z-index: -9999;" autoplay playsinline muted></video>
+            
+            <!-- Canvas Overlay for facial landmarks and simulated cabin -->
+            <canvas id="dms-canvas" width="640" height="480" class="w-full h-full object-cover"></canvas>
+            
+            <!-- Recording Indicator Badge -->
+            <div id="dms-recording-indicator" class="hidden absolute top-4 left-4 px-2.5 py-1 rounded-full bg-red-600/90 text-white font-mono text-[10px] font-bold flex items-center gap-1.5 shadow-lg shadow-red-600/50 animate-pulse">
+              <span class="w-2 h-2 rounded-full bg-white"></span>
+              <span>REC <span id="dms-rec-timer">0s</span></span>
+            </div>
+          </div>
+
+          <!-- Simulation Triggers Bar -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-xs font-mono uppercase text-slate-400 mb-3 flex items-center justify-between">
+              <span>Simulation Test Triggers (Slide 4 Behaviors):</span>
+              <span class="text-[11px] text-slate-400">Click to evaluate response</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <button id="btn-sim-microsleep" class="p-2.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/50 text-xs font-medium transition flex flex-col items-center gap-1">
+                <i data-lucide="moon" class="w-4 h-4"></i>
+                <span>Micro-Sleep</span>
+              </button>
+              <button id="btn-sim-yawn" class="p-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-xs font-medium transition flex flex-col items-center gap-1">
+                <i data-lucide="frown" class="w-4 h-4"></i>
+                <span>Trigger Yawn</span>
+              </button>
+              <button id="btn-sim-phone" class="p-2.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/50 text-xs font-medium transition flex flex-col items-center gap-1">
+                <i data-lucide="smartphone" class="w-4 h-4"></i>
+                <span>Phone Usage</span>
+              </button>
+              <button id="btn-sim-gaze" class="p-2.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/50 text-xs font-medium transition flex flex-col items-center gap-1">
+                <i data-lucide="compass" class="w-4 h-4"></i>
+                <span>Off-Road Gaze</span>
+              </button>
+              <button id="btn-sim-reset" class="p-2.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/50 text-xs font-medium transition flex flex-col items-center gap-1 col-span-2 sm:col-span-1">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Reset Alert</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Incident Captures Shelf -->
+          <div id="dms-captures-shelf" class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="images" class="w-4 h-4 text-cyan-400"></i>
+                <span class="text-xs font-mono font-bold uppercase text-slate-300">Live Incident Captures Gallery</span>
+                <span id="dms-captures-count" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0 saved</span>
+              </div>
+              <span class="text-[10px] text-slate-400">Snapshots include burnt-in timestamp, EAR score, & telemetry</span>
+            </div>
+            
+            <div id="dms-captures-container" class="flex items-center gap-3 overflow-x-auto pb-2 min-h-[70px]">
+              <div id="dms-no-captures-msg" class="text-xs text-slate-500 italic py-2">
+                No captures yet. Click "Snap Photo" or "Record Clip" above to log real-time driver incidents.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Telemetry & EAR Chart -->
+        <div class="space-y-4">
+          
+          <!-- Slide 4 Metric Cards: EAR, YAWN/min, GAZE OFF-ROAD -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-[10px] font-mono text-slate-400 uppercase">Eye Aspect Ratio</div>
+              <div id="metric-ear-val" class="text-2xl font-mono font-extrabold text-cyan-400 mt-1">0.32</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Threshold: &lt; 0.20</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-[10px] font-mono text-slate-400 uppercase">YAWN / min</div>
+              <div id="metric-yawn-val" class="text-2xl font-mono font-extrabold text-amber-400 mt-1">0</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Fatigue indicator</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-[10px] font-mono text-slate-400 uppercase">Gaze Off-Road</div>
+              <div id="metric-gaze-val" class="text-2xl font-mono font-extrabold text-[#FF5A5F] mt-1">0s</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Warning: &gt; 3.0s</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-[10px] font-mono text-slate-400 uppercase">Fatigue Score</div>
+              <div id="metric-fatigue-val" class="text-2xl font-mono font-extrabold text-emerald-400 mt-1">12%</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Multimodal index</div>
+            </div>
+          </div>
+
+          <!-- Real-Time EAR Rolling Oscilloscope Graph -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-slate-300">Live EAR Waveform</span>
+              <span class="text-[10px] font-mono text-red-400">Threshold 0.20</span>
+            </div>
+            <div class="h-28 w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+              <canvas id="dms-ear-chart" width="300" height="110" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+          <!-- Actuation & Safety Dispatches (Slide 4) -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
+            <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] block mb-2">Actuator Dispatches</span>
+            <div class="flex items-center justify-between text-slate-400 py-1 border-b border-slate-800">
+              <span>Multi-tone Audio Alarm:</span>
+              <span class="text-emerald-400 font-mono">ARMED</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400 py-1 border-b border-slate-800">
+              <span>Haptic Steering Pulse:</span>
+              <span class="text-emerald-400 font-mono">STANDBY</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400 py-1">
+              <span>Cabin Lighting Boost:</span>
+              <span class="text-emerald-400 font-mono">AUTO-TRIGGER</span>
+            </div>
+          </div>
+
+          <!-- Alert Dispatch Log -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-xs font-mono uppercase text-slate-400 mb-2">Live Incident Log</div>
+            <div id="dms-alert-logs" class="max-h-36 overflow-y-auto space-y-1">
+              <!-- Logs injected here -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 3: COLLISION AVOIDANCE & RADAR                   -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-collision" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">05</span>
+            <h2 class="text-xl font-bold text-white">Smart Collision Avoidance & 360° Perception</h2>
+            <span id="val-aeb-status" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500 rounded font-bold text-xs">✓ CLEAR TRAJECTORY</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Continuously calculates distance, relative speed, and braking dynamics across surrounding vehicles. Warns driver, pre-charges brakes, and triggers AEB.</p>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <div class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">
+            <span class="text-slate-400">Decision Latency: </span>
+            <span id="val-metric-latency" class="text-emerald-400 font-bold">64 ms</span>
+            <span class="text-[10px] text-slate-400">(≤100ms)</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">
+            <span class="text-slate-400">Sensor Coverage: </span>
+            <span class="text-cyan-400 font-bold">360° Perception</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">
+            <span class="text-slate-400">Blind Spots: </span>
+            <span class="text-emerald-400 font-bold">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radar Canvas & Controls Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Highway Radar Simulation Canvas -->
+        <div class="lg:col-span-2">
+          <div class="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 aspect-[4/3] flex items-center justify-center shadow-2xl">
+            <canvas id="collision-canvas" width="600" height="450" class="w-full h-full object-cover"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: Telemetry & Scenario Injector -->
+        <div class="space-y-4">
+          
+          <!-- Live Telemetry Card -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <h3 class="text-xs font-mono uppercase text-slate-400">Real-Time Kinematics & TTC</h3>
+            
+            <div class="flex items-center justify-between py-1 border-b border-slate-800 text-xs">
+              <span class="text-slate-400">Time-To-Collision (TTC):</span>
+              <span id="val-metric-ttc" class="font-mono font-bold text-lg text-emerald-400">SAFE (>8s)</span>
+            </div>
+
+            <div class="flex items-center justify-between py-1 border-b border-slate-800 text-xs">
+              <span class="text-slate-400">Relative Speed (Δv):</span>
+              <span id="val-rel-speed" class="font-mono font-bold text-sm text-cyan-400">+10 km/h</span>
+            </div>
+
+            <div class="flex items-center justify-between py-1 border-b border-slate-800 text-xs">
+              <span class="text-slate-400">Brake Hydraulic Circuit:</span>
+              <span id="val-brake-precharge" class="font-mono font-bold text-xs text-slate-400">STANDBY</span>
+            </div>
+
+            <div class="flex items-center justify-between py-1 text-xs">
+              <span class="text-slate-400">Decision Engine Latency:</span>
+              <span class="font-mono text-emerald-400 font-bold">&le; 100 ms target</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Sliders -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
+            <h3 class="text-xs font-mono uppercase text-slate-400">Manual Physics Override</h3>
+            
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-300">Ego Vehicle Cruising Speed:</span>
+                <span id="val-ego-speed" class="font-mono text-cyan-400 font-bold">80 km/h</span>
+              </div>
+              <input id="slider-ego-speed" type="range" min="0" max="140" value="80" class="w-full">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-300">Lead Vehicle Distance:</span>
+                <span id="val-lead-dist" class="font-mono text-cyan-400 font-bold">42 m</span>
+              </div>
+              <input id="slider-lead-dist" type="range" min="5" max="80" value="42" class="w-full">
+            </div>
+          </div>
+
+          <!-- Scenario Trigger Buttons -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <h3 class="text-xs font-mono uppercase text-slate-400">Critical Collision Test Scenarios</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-scenario-brake" class="p-2.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-semibold transition flex flex-col items-center gap-1">
+                <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                <span>Lead Sudden Brake</span>
+              </button>
+
+              <button id="btn-scenario-pedestrian" class="p-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold transition flex flex-col items-center gap-1">
+                <i data-lucide="user" class="w-4 h-4"></i>
+                <span>Jaywalking Pedestrian</span>
+              </button>
+
+              <button id="btn-scenario-cutin" class="p-2.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 text-xs font-semibold transition flex flex-col items-center gap-1">
+                <i data-lucide="car" class="w-4 h-4"></i>
+                <span>Blind-Spot Cut-In</span>
+              </button>
+
+              <button id="btn-scenario-cruise" class="p-2.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition flex flex-col items-center gap-1">
+                <i data-lucide="compass" class="w-4 h-4"></i>
+                <span>Normal Cruise</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 4: SMART SIGNALS & TRAFFIC MANAGEMENT           -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-traffic" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">05</span>
+            <h2 class="text-xl font-bold text-white">Intelligent Traffic Management & Smart Signals</h2>
+            <span id="traffic-mode-badge" class="px-2.5 py-1 text-xs font-semibold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500">🤖 ML ADAPTIVE SCHEDULING</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Adaptive signals respond to traffic density, peak-hour patterns, and emergency-vehicle priority. Dissolving congestion before it forms.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <input id="toggle-ai-traffic" type="checkbox" checked class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+            <span>AI Dynamic Phase Adaptation</span>
+          </label>
+          <button id="btn-dispatch-ems" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-lg shadow-red-600/30 animate-pulse">
+            <i data-lucide="siren" class="w-4 h-4"></i>
+            <span>DISPATCH AMBULANCE (GREEN WAVE)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- EMS Corridor Banner -->
+      <div id="ems-corridor-banner" class="hidden p-4 rounded-xl bg-emerald-500/15 border border-emerald-500 text-emerald-200 animate-fadeIn">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+          <div class="text-xs">
+            <strong class="uppercase text-emerald-300">Green Corridor Active:</strong> Intersection 04-B has locked solid GREEN for approaching EMS Unit. Conflicting cross-traffic safely held at RED. 0 conflict points.
+          </div>
+        </div>
+      </div>
+
+      <!-- Intersection Canvas & Flow Metrics Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: 4-Way Connected Intersection Canvas -->
+        <div class="lg:col-span-2">
+          <div class="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 aspect-[4/3] flex items-center justify-center shadow-2xl">
+            <canvas id="traffic-canvas" width="500" height="500" class="w-full h-full object-cover"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: Slide 5 Measured Metrics & Traffic Spawner -->
+        <div class="space-y-4">
+          
+          <!-- Slide 5 Measured Metrics Card -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <h3 class="text-xs font-mono uppercase text-slate-400">Slide 5 Benchmark Outcomes</h3>
+            
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <div id="val-traffic-wait" class="text-2xl font-extrabold text-emerald-400">-27%</div>
+                <div class="text-[10px] text-slate-300 font-medium mt-1">Wait Time</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <div id="val-traffic-throughput" class="text-2xl font-extrabold text-cyan-400">+18%</div>
+                <div class="text-[10px] text-slate-300 font-medium mt-1">Throughput</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <div id="val-traffic-incidents" class="text-2xl font-extrabold text-[#FF5A5F]">-32%</div>
+                <div class="text-[10px] text-slate-300 font-medium mt-1">Incidents</div>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-400 pt-2 border-t border-slate-800 flex justify-between">
+              <span>Active Signal Phase:</span>
+              <span id="val-traffic-phase" class="font-mono text-emerald-400 font-bold">NORTH-SOUTH GREEN</span>
+            </div>
+          </div>
+
+          <!-- Spawner Controls -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <h3 class="text-xs font-mono uppercase text-slate-400">Traffic Density Injector</h3>
+            <p class="text-xs text-slate-400">Inject surge batches to test how the ML scheduler adapts light timings.</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-add-ns-traffic" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition">
+                + Surge North-South
+              </button>
+              <button id="btn-add-ew-traffic" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition">
+                + Surge East-West
+              </button>
+            </div>
+          </div>
+
+          <!-- Traffic Event Logs -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-xs font-mono uppercase text-slate-400 mb-2">Signal Automation Log</div>
+            <div id="traffic-event-logs" class="max-h-40 overflow-y-auto space-y-1">
+              <!-- Traffic logs injected here -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 5: WEATHER & HAZARD V2X NETWORK                 -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-hazards" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">06</span>
+            <h2 class="text-xl font-bold text-white">Weather & Road Hazard Detection (V2X Network)</h2>
+            <span class="px-2.5 py-1 text-xs font-semibold rounded bg-amber-500/20 text-amber-400 border border-amber-500">📡 LIVE BROADCAST GRID</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Hazards are detected by roadside cameras, vehicle sensors, and connected fleets — then broadcast to every vehicle approaching the affected zone.</p>
+        </div>
+
+        <button id="btn-broadcast-v2x" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-emerald-600/30">
+          <i data-lucide="radio" class="w-4 h-4"></i>
+          <span>BROADCAST ALERT TO APPROACHING FLEET</span>
+        </button>
+      </div>
+
+      <!-- Broadcast Status Message -->
+      <div id="v2x-broadcast-status" class="hidden"></div>
+
+      <!-- Map & Hazard Detail Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: GIS Sector Map -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 aspect-[4/3] flex items-center justify-center shadow-2xl">
+            <canvas id="hazard-map-canvas" width="560" height="440" class="w-full h-full object-cover cursor-pointer"></canvas>
+          </div>
+          <div class="text-[11px] text-slate-400 italic text-center">
+            Click on any hazard geofence zone on the map to inspect live telemetry and broadcast advisories.
+          </div>
+        </div>
+
+        <!-- Right: Selected Hazard Inspector & Catalog -->
+        <div class="space-y-4">
+          
+          <!-- Hazard Detail Card -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="hazard-detail-type" class="text-xs font-mono font-bold text-amber-400 uppercase">Heavy Rain</span>
+              <span id="hazard-severity-badge" class="px-2.5 py-1 text-xs font-bold rounded bg-red-500/20 text-red-400 border border-red-500">CRITICAL</span>
+            </div>
+
+            <h3 id="hazard-detail-title" class="text-base font-bold text-white">Heavy Rain Detected</h3>
+            <p id="hazard-detail-loc" class="text-xs text-slate-400">Bay Bridge Expressway · Km 18</p>
+
+            <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700 space-y-1.5 text-xs">
+              <div class="flex justify-between">
+                <span id="hazard-metric-title" class="text-slate-400">Hydroplaning Risk Index:</span>
+                <span id="hazard-metric-val" class="font-mono text-cyan-400 font-bold">8.7 / 10 (Friction μ = 0.32)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Speed Advisory:</span>
+                <span id="hazard-speed-advisory" class="font-mono text-amber-400 font-bold">50 km/h (Normal: 100)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Source:</span>
+                <span id="hazard-sensor-source" class="font-mono text-slate-300 text-[10px]">Wiper + ESP slip</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Hazards List (Slide 6 Items) -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <div class="text-xs font-mono uppercase text-slate-400 mb-2">Slide 6 Monitored Environmental Hazards:</div>
+            <div id="hazard-cards-container" class="space-y-2 max-h-56 overflow-y-auto">
+              <!-- Populated by hazards.js -->
+            </div>
+          </div>
+
+          <!-- Crowd-Sourced Hazard Reporting Form (Slide 6 Potholes) -->
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-xs font-mono uppercase text-slate-400 mb-2">Report Road Defect (Crowd-Sourced)</div>
+            <form id="form-report-defect" class="space-y-2 text-xs">
+              <select id="report-type" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none">
+                <option value="Pothole">Pothole / Road Defect</option>
+                <option value="Slippery Surface">Slippery Oil / Ice Patch</option>
+                <option value="Low Visibility">Blinding Glare / Dusk Hazard</option>
+                <option value="Debris Obstacle">Obstacle / Debris on Road</option>
+              </select>
+              <input id="report-loc" type="text" placeholder="Location (e.g. Route 4 Mile 12)" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 placeholder-slate-500 focus:outline-none">
+              <select id="report-severity" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none">
+                <option value="MODERATE">Moderate Severity</option>
+                <option value="HIGH">High Severity</option>
+                <option value="CRITICAL">Critical Emergency</option>
+              </select>
+              <button type="submit" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded font-semibold transition border border-slate-700">
+                + Submit Crowd Report
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 6: CRASH RESPONSE & TELEMETRY AUTO-DISPATCH     -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-telemetry" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">07 & 14</span>
+            <h2 class="text-xl font-bold text-white">Crash Response Trigger & Telemetry Auto-Dispatch</h2>
+            <span id="badge-crash-latency" class="px-2.5 py-1 text-xs font-mono font-bold rounded bg-red-500/20 text-red-400 border border-red-500">≤120ms ALERT LATENCY</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Automatic emergency call dispatch with precise vehicle kinematics, G-force impact telemetry, rollover angles, and patient triage data.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="btn-simulate-crash" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-red-600/30 animate-pulse">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>TRIGGER SEVERE CRASH SIMULATION</span>
+          </button>
+          <button id="btn-reset-crash" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Slide 9 & 14 Measured Benefits -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-3xl font-extrabold text-cyan-400">+58%</div>
+          <div class="text-xs font-bold text-slate-200 mt-1">Faster Emergency Notification</div>
+          <p class="text-[11px] text-slate-400 mt-0.5">Automated cellular eCall triggers in milliseconds vs manual calls.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-3xl font-extrabold text-emerald-400">+52%</div>
+          <div class="text-xs font-bold text-slate-200 mt-1">Faster EMS Scene Arrival</div>
+          <p class="text-[11px] text-slate-400 mt-0.5">Instant green waves and exact coordinates cut golden-hour response time.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-3xl font-extrabold text-amber-400">≤ 120 ms</div>
+          <div class="text-xs font-bold text-slate-200 mt-1">End-to-End Alert Latency</div>
+          <p class="text-[11px] text-slate-400 mt-0.5">Hardware accelerometers to public safety answering point (PSAP).</p>
+        </div>
+      </div>
+
+      <!-- Active Crash Telemetry Card (Shown when simulated) -->
+      <div id="crash-status-card" class="hidden space-y-6">
+        
+        <!-- Emergency Dispatch Dispatcher Head-Up Banner -->
+        <div class="p-5 rounded-xl bg-red-950/40 border-2 border-red-500 shadow-2xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-red-500/30 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+              <span class="font-extrabold text-base text-red-100 uppercase tracking-wider">CODE RED · CRITICAL AUTOMATED SOS TRANSMITTED</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <span class="text-slate-300">ESTIMATED EMS ARRIVAL:</span>
+              <span id="crash-ems-eta" class="text-emerald-400 font-extrabold text-sm">5m 40s</span>
+              <span class="text-slate-400">(Standard: 11m 50s)</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400 font-mono text-[10px] uppercase block">Deceleration G-Force</span>
+              <span id="metric-crash-gforce" class="text-lg font-bold font-mono text-red-400 mt-1 block">16.4 G</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400 font-mono text-[10px] uppercase block">Speed Transition</span>
+              <span id="metric-crash-speed" class="text-lg font-bold font-mono text-amber-400 mt-1 block">84 → 0 km/h</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400 font-mono text-[10px] uppercase block">Airbags State</span>
+              <span id="metric-crash-airbag" class="text-lg font-bold font-mono text-emerald-400 mt-1 block">DEPLOYED (3/3)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400 font-mono text-[10px] uppercase block">Vehicle Roll Angle</span>
+              <span id="metric-crash-roll" class="text-lg font-bold font-mono text-cyan-400 mt-1 block">34° Roll</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400 font-mono text-[10px] uppercase block">Occupants</span>
+              <span id="metric-crash-occupants" class="text-lg font-bold font-mono text-purple-400 mt-1 block">2 Persons</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry JSON Payload Viewer -->
+        <div class="p-5 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono uppercase text-slate-300">Live JSON Telemetry Transmitted to 911 / 112 PSAP Dispatch</span>
+            <span class="text-[10px] font-mono text-emerald-400">256-bit Encrypted Cellular Link</span>
+          </div>
+          <pre id="crash-telemetry-json" class="bg-slate-950 p-4 rounded-lg font-mono text-xs text-emerald-400 overflow-x-auto border border-slate-800 max-h-72"></pre>
+        </div>
+
+      </div>
+
+      <!-- Idle state illustration -->
+      <div id="crash-idle-view" class="p-12 rounded-2xl bg-slate-900/40 border border-dashed border-slate-800 text-center">
+        <i data-lucide="shield-alert" class="w-12 h-12 text-slate-600 mx-auto mb-3"></i>
+        <h3 class="text-base font-bold text-slate-300">Crash Telemetry Engine on Standby</h3>
+        <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4">
+          Click the "Trigger Severe Crash Simulation" button above to simulate a high-G collision event and view the auto-dispatched telemetry packet.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- TAB 7: 4-LAYER ARCHITECTURE & FEEDBACK LOOP         -->
+    <!-- ---------------------------------------------------- -->
+    <div id="panel-architecture" class="tab-content-panel hidden space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">07</span>
+            <h2 class="text-xl font-bold text-white">System Architecture: Four Layers, One Continuous Loop</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Continuous feedback loop: outputs become new inputs as the system learns from every event.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="text-xs font-mono px-3 py-1.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+            Pipeline Latency: <span id="pipeline-latency-counter" class="text-emerald-400 font-bold">0 ms</span>
+          </div>
+          <button id="btn-simulate-pipeline" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-purple-600/30">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span>TEST END-TO-END PIPELINE SIGNAL</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Pipeline Status Banner -->
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex items-center gap-3">
+        <i data-lucide="activity" class="w-4 h-4 text-purple-400 shrink-0"></i>
+        <span id="pipeline-status-text" class="text-slate-300">Click "Test End-to-End Pipeline Signal" to trace telemetry data from sensory input to actuator output.</span>
+      </div>
+
+      <!-- 4 Layers Flow (Slide 7) -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <!-- Layer 1: Input -->
+        <div data-layer="1" class="arch-layer-card p-5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold text-[#FF5A5F]">01 · INPUT LAYER</span>
+            <i data-lucide="video" class="w-4 h-4 text-[#FF5A5F]"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-2">Sensory Capture</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> CCTV cameras</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Vehicle sensors & DMS</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> GPS systems</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Radar & LiDAR sweeps</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Traffic databases</li>
+          </ul>
+        </div>
+
+        <!-- Layer 2: Processing -->
+        <div data-layer="2" class="arch-layer-card p-5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold text-cyan-400">02 · PROCESSING LAYER</span>
+            <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-2">Edge Computation</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i> ML algorithms</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i> Computer vision (EAR/Yawn)</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i> Neural networks</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i> Sensor fusion</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i> Edge inference (&le;120ms)</li>
+          </ul>
+        </div>
+
+        <!-- Layer 3: Decision -->
+        <div data-layer="3" class="arch-layer-card p-5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold text-amber-400">03 · DECISION LAYER</span>
+            <i data-lucide="git-commit" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-2">Policy & Arbitration</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-amber-400"></i> Trigger alarms</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-amber-400"></i> Control signals (Green Wave)</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-amber-400"></i> Notify EMS auto-dispatch</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-amber-400"></i> Apply braking (AEB)</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-amber-400"></i> Reroute traffic</li>
+          </ul>
+        </div>
+
+        <!-- Layer 4: Output -->
+        <div data-layer="4" class="arch-layer-card p-5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold text-emerald-400">04 · OUTPUT LAYER</span>
+            <i data-lucide="send" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-2">Actuation & Alerts</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Dashboard alerts</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Mobile push notifications</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Emergency calls (eCall)</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Traffic updates & V2X</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Driver HUD projection</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Continuous Feedback Loop Card (Slide 7) -->
+      <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-purple-500/10 border border-emerald-500/30">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="repeat" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Continuous Feedback Loop</h3>
+            <p class="text-xs text-slate-300 mt-0.5">
+              Outputs become new inputs as the system learns from every near-miss, sudden brake, weather change, and traffic pattern across millions of vehicle miles.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-800 bg-[#070B14] py-6 px-4 text-center text-xs text-slate-500 mt-12">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-400">ROADVISION AI 2026</span>
+        <span>·</span>
+        <span>Accident Prevention & Road Safety Platform</span>
+      </div>
+      <div>
+        <span>"Safer roads are an engineering choice."</span>
+      </div>
+      <div class="text-[11px] font-mono text-slate-400">
+        All 14 Slides Implemented · Ready for Live Deployment
+      </div>
+    </div>
+  </footer>
+
+  <!-- Subsystem JavaScript Modules -->
+  <script src="js/audio.js"></script>
+  <script src="js/dms.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/traffic.js"></script>
+  <script src="js/hazards.js"></script>
+  <script src="js/telemetry.js"></script>
+  <script src="js/architecture.js"></script>
+  <script src="js/research.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
